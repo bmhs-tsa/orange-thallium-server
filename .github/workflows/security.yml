@@ -1,0 +1,51 @@
+# Run security audits
+name: Security-Audits
+on:
+  - push
+  - pull_request
+jobs:
+  # Audit all source code with Secure Go (https://securego.io)
+  secure-go:
+    name: Audit source code with Secure Go
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Setup Go
+      - name: Setup Go
+        uses: actions/setup-go@v2
+
+      # Install Go Bindata
+      - name: Install Go Bindata
+        run: go get -u github.com/kevinburke/go-bindata/...
+
+      # Audit code
+      - name: Audit code
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+  # Audit all source code with CodeQL (https://semmle.com)
+  codeql:
+    name: Audit source code with CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Setup CodeQL
+      - name: Setup CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: go
+
+      # Setup Go
+      - name: Setup Go
+        uses: actions/setup-go@v2
+
+      # Perform CodeQL analysis
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v1

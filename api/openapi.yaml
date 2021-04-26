@@ -1,0 +1,116 @@
+openapi: 3.0.2
+
+info:
+  title: Orange Thallium
+  description: An esports credential management system. This is the API documentation for the [Orange Thallium Server](https://github.com/bmhs-tsa/orange-thallium-server), not to be confused with with the [Orange Thallium Client](https://github.com/bmhs-tsa/orange-thallium-client) which consumes this API.
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://github.com/bmhs-tsa/orange-thallium-server/blob/main/LICENSE
+
+tags:
+  - name: credential
+    description: eSport game credentials
+  - name: platform
+    description: eSport game platforms
+
+paths:
+  /credentials/{platform}/{accountID}:
+    get:
+      operationId: GetCredential
+      tags:
+        - "credential"
+      summary: Get a credential from Vault
+      security:
+        - OpenID:
+          - user
+      parameters:
+        - name: platform
+          description: The platform name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: accountID
+          description: 'The desired account ID (eg: email or username)'
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/credential'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        500:
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
+  /platforms/all:
+    get:
+      operationId: GetAllPlatforms
+      tags:
+        - "platform"
+      summary: List all enabled eSport platforms
+      description: You can update platforms by modifying the server config file and restarting
+      security:
+        - OpenID:
+          - user
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+components:
+  schemas:
+    credential:
+      description: eSport credential
+      type: object
+      required:
+        - "username"
+        - "password"
+      properties:
+        username:
+          type: string
+          description: 'The platform-specific username (eg: email or username)'
+        password:
+          type: string
+          description: The platform-specific password
+        mfaSecret:
+          type: string
+          description: The platform-specific multi-factor authentication secret (Not code)
+    error:
+      description: Generic error schema
+      type: object
+      required:
+        - "message"
+      properties:
+        message:
+          type: string
+          description: 'The error message'
+  securitySchemes:
+    OpenID:
+      type: http
+      scheme: bearer

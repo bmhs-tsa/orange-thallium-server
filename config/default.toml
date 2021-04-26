@@ -1,0 +1,60 @@
+# Default config
+
+# Environment
+env = "production"
+
+# HTTP config
+[http]
+# Listen address (Including colon)
+address = ":443"
+# Wether TLS is enabled or not (Strongly recommended)
+tls = true
+# TLS keypair paths
+cert = ""
+key = ""
+
+# OpenID config
+[openid]
+#OpenID server
+address = ""
+#OpenID client ID
+client_id = ""
+#GJSON path to the list of roles (In the identity token)
+role_path = "resource_access.orange-thallium.roles"
+
+# OpenID roles config
+[openid.roles]
+# The role required for regular use (Non-administrative actions)
+user = "user"
+
+# Vault instance config
+[vault]
+# Vault address
+address = ""
+# Vault token (Should be a locked-down service token)
+token = ""
+
+# MFA config (Unsupported right now)
+[mfa]
+# How far into the future should MFA codes be generated
+time_shift = 5
+
+# Platforms config
+[platforms]
+# enabled: wether or not the platform is enabled
+# key: the absolute Vault secret path
+
+# Epic Games config
+[platforms.epic-games]
+enabled = true
+key = "/secret/data/orange-thallium/epic-games"
+
+# Steam config
+[platforms.steam]
+enabled = true
+key = "/secret/data/orange-thallium/steam"
+
+# Riot config
+[platforms.riot]
+enabled = true
+key = "/secret/data/orange-thallium/riot"
