@@ -2,7 +2,7 @@
 
 ![Status Shield](https://img.shields.io/badge/Status-Release-brightgreen?style=for-the-badge)
 ![Go Version](https://img.shields.io/github/go-mod/go-version/bmhs-tsa/orange-thallium-server?style=for-the-badge)
-[![Security Audits](https://img.shields.io/github/workflow/status/bmhs-tsa/orange-thallium-server/Security-Audits?label=Security%20Audits&style=for-the-badge)](https://github.com/bmhs-tsa/orange-thallium-server/actions)
+[![Continuous Integration & Deployment](https://img.shields.io/github/workflow/status/bmhs-tsa/orange-thallium-server/CID?label=CI%2FCD&style=for-the-badge)](https://github.com/bmhs-tsa/orange-thallium-server/actions)
 
 ![logo](logo.png)
 An esports credential management system. This repository is the server, the client

@@ -1,0 +1,85 @@
+# Continuous Integration & Deployment
+name: CID
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+# Audit all source code with Secure Go (https://securego.io)
+  audit-secure-go:
+    name: Audit source code with Secure Go
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Setup Go
+      - name: Setup Go
+        uses: actions/setup-go@v2
+
+      # Install Go Bindata
+      - name: Install Go Bindata
+        run: go get -u github.com/kevinburke/go-bindata/...
+
+      # Audit code
+      - name: Audit code
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+  # Audit all source code with CodeQL (https://semmle.com)
+  audit-codeql:
+    name: Audit source code with CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Setup CodeQL
+      - name: Setup CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: go
+
+      # Setup Go
+      - name: Setup Go
+        uses: actions/setup-go@v2
+
+      # Perform CodeQL analysis
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v1
+
+  # Build Docker image and push to the GitHub Container Registry
+  github-registry:
+    name: Push to the GitHub Container Registry
+    runs-on: ubuntu-latest
+
+    # Run only on the main branch and if security audits passed
+    if: github.ref == 'refs/heads/main'
+    needs: [audit-secure-go, audit-codeql]
+
+    # Add package write permission
+    permissions:
+      packages: write
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Login to the registry
+      - name: Login to the registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push the image
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
