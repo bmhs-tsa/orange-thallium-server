@@ -18,16 +18,24 @@ var app = echo.New()
 
 func init() {
 	//Viper config
-	viper.SetConfigName("local")
-	viper.SetConfigType("toml")
 	viper.AddConfigPath("config")
+	viper.SetConfigType("toml")
 
+	// Use the local config if present otherwise use the default config
+	if exists("config/local.toml") {
+		viper.SetConfigName("local")
+	} else {
+		viper.SetConfigName("default")
+	}
+
+	//Read the config
 	err := viper.ReadInConfig()
 
 	if err != nil {
 		panic(err)
 	}
 
+	//Enable environment variables
 	viper.AutomaticEnv()
 }
 
@@ -40,10 +48,6 @@ func main() {
 	app.Server.ReadTimeout = time.Second
 	app.Server.WriteTimeout = 2 * time.Second
 	app.HideBanner = true
-	app.Server.TLSConfig = &tls.Config{
-		//Enforce minimum TLS version
-		MinVersion: tls.VersionTLS13,
-	}
 	app.Validator = &CustomValidator{
 		Validator: validator.New(),
 	}
@@ -124,6 +128,12 @@ func main() {
 		if !exists(key) {
 			fmt.Printf("TLS key %s does not exist!", key)
 			os.Exit(1)
+		}
+
+		//Enforce minimum TLS version
+		app.Server.TLSConfig = &tls.Config{
+			//Enforce minimum TLS version
+			MinVersion: tls.VersionTLS13,
 		}
 
 		//Start the server

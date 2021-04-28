@@ -10,15 +10,15 @@ address = ":443"
 # Wether TLS is enabled or not (Strongly recommended)
 tls = true
 # TLS keypair paths
-cert = ""
-key = ""
+cert = "/config/tls.cer"
+key = "/config/tls.key"
 
 # OpenID config
 [openid]
 #OpenID server
-address = ""
+address = "https://demo.identityserver.io"
 #OpenID client ID
-client_id = ""
+client_id = "interactive.public"
 #GJSON path to the list of roles (In the identity token)
 role_path = "resource_access.orange-thallium.roles"
 

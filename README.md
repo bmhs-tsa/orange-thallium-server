@@ -16,9 +16,14 @@ can be found [here](https://github.com/bmhs-tsa/orange-thallium-client).
 ### Starting the server
 1. Install [Hashicorp Vault](https://www.vaultproject.io/docs/install)
 2. Configure your OpenID server (Make sure user roles are set in the identity tokens)
-3. Copy [`default.toml`](config/default.toml) to `local.toml` (In the same directory)
-4. Update the various options in `local.toml` (Don't worry, it's commented)
-5. Start the server: `go run .` (From the project root)
+3. Configure the server via **one** of the below methods:
+   1. Config file
+      1. Copy [`default.toml`](config/default.toml) to `local.toml` (In the same directory)
+      2. Update `local.toml`
+      3. If you're using Docker, make sure the container can access `local.toml`
+   2. Environment variables
+      1. Set environment variables to modify the values in [`default.toml`](config/default.toml) (`USE_ALL_CAPS_SNAKE_CASE.WITH_DECIMALS_FOR_NESTED_KEYS`)
+4. If not using Docker, build the server with `go build .` (From the project root) and manually execute it
 
 ### Adding a credential
 1. In the Vault, create a secret with the path you specified in the config file;

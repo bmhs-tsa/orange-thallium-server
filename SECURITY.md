@@ -9,7 +9,7 @@
 ## Reporting a Vulnerability
 
 ### Address
-Please email all security concerns to [`opensource@bmhstsa.com`](mailto:opensource@bmhstsa.com).
+Please email all security concerns to [`Wakeful-Cloud`](mailto:wakefulcloud@protonmail.com).
 
 ### Compensation
 While we appreciate vulnerability reports, we're unable to offer compensation
