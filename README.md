@@ -23,7 +23,9 @@ can be found [here](https://github.com/bmhs-tsa/orange-thallium-client).
       3. If you're using Docker, make sure the container can access `local.toml`
    2. Environment variables
       1. Set environment variables to modify the values in [`default.toml`](config/default.toml) (`USE_ALL_CAPS_SNAKE_CASE.WITH_DECIMALS_FOR_NESTED_KEYS`)
-4. If not using Docker, build the server with `go build .` (From the project root) and manually execute it
+4. Start the server via **one** of the below methods:
+   1. If running on bare metal, build the server with `go build .` (From the project root) and manually execute it
+   2. If running on Docker, use the `ghcr.io/bmhs-tsa/orange-thallium-server:latest` image
 
 ### Adding a credential
 1. In the Vault, create a secret with the path you specified in the config file;
