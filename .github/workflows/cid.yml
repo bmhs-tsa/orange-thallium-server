@@ -52,10 +52,6 @@ jobs:
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v1
 
-      # Upload results
-      - name: Upload CodeQL results
-        uses: github/codeql-action/upload-sarif@v1
-
   # Build Docker image and push to the GitHub Container Registry
   github-registry:
     name: Push to the GitHub Container Registry
