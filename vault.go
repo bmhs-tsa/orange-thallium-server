@@ -19,7 +19,7 @@ func init() {
 		SRVLookup: viper.GetBool("vault.srv_lookup"),
 	}
 
-	config.ConfigureTLS(&api.TLSConfig{
+	err := config.ConfigureTLS(&api.TLSConfig{
 		CACert:        viper.GetString("vault.ca_cert"),
 		CAPath:        viper.GetString("vault.ca_path"),
 		ClientCert:    viper.GetString("vault.client_cert"),
@@ -27,6 +27,10 @@ func init() {
 		Insecure:      viper.GetBool("vault.insecure"),
 		TLSServerName: viper.GetString("vault.sni_host"),
 	})
+
+	if err != nil {
+		panic(err)
+	}
 
 	//Initialize the Vault client
 	vaultClient, err := api.NewClient(config)
