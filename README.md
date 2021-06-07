@@ -5,6 +5,7 @@
 [![Continuous Integration & Deployment](https://img.shields.io/github/workflow/status/bmhs-tsa/orange-thallium-server/CID?label=CI%2FCD&style=for-the-badge)](https://github.com/bmhs-tsa/orange-thallium-server/actions)
 
 ![logo](logo.png)
+
 An esports credential management system. This repository is the server, the client
 can be found [here](https://github.com/bmhs-tsa/orange-thallium-client).
 
