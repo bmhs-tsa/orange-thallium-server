@@ -144,7 +144,7 @@ func main() {
 	}
 }
 
-//Check wether a file exists
+//Check whether a file exists
 func exists(filename string) bool {
 	_, err := os.Stat(filename)
 

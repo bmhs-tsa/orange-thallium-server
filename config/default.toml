@@ -5,43 +5,43 @@ env = "production"
 
 # HTTP config
 [http]
-# Listen address (Including colon)
-address = ":443"
-# Wether TLS is enabled or not (Strongly recommended)
-tls = true
+address = ":443" # Listen address (Including colon)
+tls = true # Whether TLS is enabled or not (Strongly recommended)
 # TLS keypair paths
 cert = "/config/tls.cer"
 key = "/config/tls.key"
 
 # OpenID config
 [openid]
-#OpenID server
-address = "https://demo.identityserver.io"
-#OpenID client ID
-client_id = "interactive.public"
-#GJSON path to the list of roles (In the identity token)
-role_path = "resource_access.orange-thallium.roles"
+address = "https://demo.identityserver.io" #OpenID server
+client_id = "interactive.public" #OpenID client ID
+role_path = "resource_access.orange-thallium.roles" #GJSON path to the list of roles (In the identity token)
 
 # OpenID roles config
 [openid.roles]
-# The role required for regular use (Non-administrative actions)
-user = "user"
+user = "user" # The role required for regular use (Non-administrative actions)
 
 # Vault instance config
 [vault]
-# Vault address
-address = ""
-# Vault token (Should be a locked-down service token)
-token = ""
+address = "" # Vault address
+# Server CA certificate path (Use one or the other)
+ca_cert = "" # Single certificate path
+ca_path = "" # Directory of possible certificates
+# Mutual TLS keypair paths
+client_cert = ""
+client_key = ""
+insecure = false # Whether to disable TLS verification or not
+sni_host = "" # TLS SNI host (Used for multiple TLS certificates)
+srv_lookup = false # Whether to lookup SRV records or not
+token = "" # Vault token (Should be a locked-down service token)
 
 # MFA config (Unsupported right now)
 [mfa]
-# How far into the future should MFA codes be generated
-time_shift = 5
+time_shift = 5 # How far into the future should MFA codes be generated (In seconds)
 
 # Platforms config
 [platforms]
-# enabled: wether or not the platform is enabled
+# enabled: whether or not the platform is enabled
 # key: the absolute Vault secret path
 
 # Epic Games config

@@ -13,10 +13,27 @@ var vaultNoCredentialValue = errors.New("No value in credential found")
 var vaultLogical *api.Logical
 
 func init() {
-	//Initialize the Vault client
-	vaultClient, err := api.NewClient(&api.Config{
-		Address: viper.GetString("vault.address"),
+	//Vault config
+	config := &api.Config{
+		Address:   viper.GetString("vault.address"),
+		SRVLookup: viper.GetBool("vault.srv_lookup"),
+	}
+
+	err := config.ConfigureTLS(&api.TLSConfig{
+		CACert:        viper.GetString("vault.ca_cert"),
+		CAPath:        viper.GetString("vault.ca_path"),
+		ClientCert:    viper.GetString("vault.client_cert"),
+		ClientKey:     viper.GetString("vault.client_key"),
+		Insecure:      viper.GetBool("vault.insecure"),
+		TLSServerName: viper.GetString("vault.sni_host"),
 	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	//Initialize the Vault client
+	vaultClient, err := api.NewClient(config)
 
 	if err != nil {
 		panic(err)
