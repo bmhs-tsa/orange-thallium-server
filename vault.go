@@ -1,14 +1,11 @@
 package main
 
 import (
-	"errors"
+	"encoding/json"
 
 	"github.com/hashicorp/vault/api"
 	"github.com/spf13/viper"
 )
-
-var vaultNoCredential = errors.New("No credential found")
-var vaultNoCredentialValue = errors.New("No value in credential found")
 
 var vaultLogical *api.Logical
 
@@ -46,6 +43,21 @@ func init() {
 	vaultLogical = vaultClient.Logical()
 }
 
+type vaultError struct {
+	Message  string   `json:"message"`
+	Warnings []string `json:"warnings"`
+}
+
+func (err vaultError) Error() string {
+	//Marshal the error
+	raw, _ := json.Marshal(err)
+
+	//Convert to string
+	errorString := string(raw)
+
+	return errorString
+}
+
 //readCredential reads the desired value from a credential in Vault
 func readCredential(path string, key string) (map[string]interface{}, error) {
 	//Read the credential
@@ -56,14 +68,20 @@ func readCredential(path string, key string) (map[string]interface{}, error) {
 	}
 
 	if credential == nil || credential.Data["data"] == nil {
-		return nil, vaultNoCredential
+		return nil, vaultError{
+			Message:  "No credential found! (Verify the Vault secret path)",
+			Warnings: credential.Warnings,
+		}
 	}
 
 	//Cast credential data
 	data := credential.Data["data"].(map[string]interface{})
 
 	if data[key] == nil {
-		return data, vaultNoCredentialValue
+		return data, vaultError{
+			Message:  "Invalid account! (Verify the account ID)",
+			Warnings: credential.Warnings,
+		}
 	}
 
 	return data[key].(map[string]interface{}), nil

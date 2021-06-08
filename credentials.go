@@ -44,12 +44,8 @@ func getCredential(ctx echo.Context) error {
 	//Read the credential from Vault
 	credential, err := readCredential(platform.Key, accountID)
 
-	if err == vaultNoCredential {
-		return echo.NewHTTPError(http.StatusNotFound, err.Error())
-	}
-
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	//Generate the response

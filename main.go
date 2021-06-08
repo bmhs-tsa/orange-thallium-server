@@ -95,7 +95,7 @@ func main() {
 		id := ctx.Response().Header().Get(echo.HeaderXRequestID)
 
 		//Generate message
-		msg := fmt.Sprintf(`{"time":"%s","id":"%s","error":"%s"}`+"\n", time, id, err.Error())
+		msg := fmt.Sprintf(`{"time":"%s","id":"%s","error":"%s"}`+"\n", time, id, err)
 
 		//Log
 		_, internalError := ctx.Logger().Output().Write([]byte(msg))
