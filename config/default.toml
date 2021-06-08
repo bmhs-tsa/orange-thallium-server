@@ -47,14 +47,14 @@ time_shift = 5 # How far into the future should MFA codes be generated (In secon
 # Epic Games config
 [platforms.epic-games]
 enabled = true
-key = "/secret/data/orange-thallium/epic-games"
+key = "/secret/orange-thallium/epic-games"
 
 # Steam config
 [platforms.steam]
 enabled = true
-key = "/secret/data/orange-thallium/steam"
+key = "/secret/orange-thallium/steam"
 
 # Riot config
 [platforms.riot]
 enabled = true
-key = "/secret/data/orange-thallium/riot"
+key = "/secret/orange-thallium/riot"
