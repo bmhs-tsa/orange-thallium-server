@@ -1,0 +1,63 @@
+# Automated code auditing
+name: Audit
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+  schedule:
+    - cron: '0 0 * * 6'
+
+jobs:
+  # Audit all source code with Secure Go (https://securego.io)
+  audit-secure-go:
+    name: Audit source code with Secure Go
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Setup Go
+      - name: Setup Go
+        uses: actions/setup-go@v2
+
+      # Install Go Bindata
+      - name: Install Go Bindata
+        run: go get -u github.com/kevinburke/go-bindata/...
+
+      # Audit code
+      - name: Audit code
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+  # Audit all source code with CodeQL (https://codeql.github.com)
+  audit-codeql:
+    name: Audit source code with CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Setup CodeQL
+      - name: Setup CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: go
+          queries: security-and-quality
+
+      # Automatically build
+      - name: Automatically build
+        uses: github/codeql-action/autobuild@v1
+
+      # Perform CodeQL analysis
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v1

@@ -1,74 +1,49 @@
 # Continuous Integration & Deployment
 name: CID
 on:
-  push:
+  workflow_run:
     branches:
-      - "main"
+      - 'main'
+    workflows:
+      - 'Audit'
+    types:
+      - completed
 
 jobs:
-# Audit all source code with Secure Go (https://securego.io)
-  audit-secure-go:
-    name: Audit source code with Secure Go
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      # Setup Go
-      - name: Setup Go
-        uses: actions/setup-go@v2
-
-      # Install Go Bindata
-      - name: Install Go Bindata
-        run: go get -u github.com/kevinburke/go-bindata/...
-
-      # Audit code
-      - name: Audit code
-        uses: securego/gosec@master
-        with:
-          args: ./...
-
-  # Audit all source code with CodeQL (https://semmle.com)
-  audit-codeql:
-    name: Audit source code with CodeQL
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      # Setup CodeQL
-      - name: Setup CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: go
-
-      # Setup Go
-      - name: Setup Go
-        uses: actions/setup-go@v2
-
-      # Perform CodeQL analysis
-      - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v1
-
   # Build Docker image and push to the GitHub Container Registry
   github-registry:
     name: Push to the GitHub Container Registry
     runs-on: ubuntu-latest
-
-    # Run only on the main branch and if security audits passed
-    if: github.ref == 'refs/heads/main'
-    needs: [audit-secure-go, audit-codeql]
-
-    # Add package write permission
     permissions:
       packages: write
-
+    # Run only if security audits passed
+    if: github.event.workflow_run.conclusion == 'success'
     steps:
       # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v2
+
+      # Generate Docker metadata
+      - name: Generate Docker metadata
+        id: metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/${{ github.repository }}
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=schedule
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+
+      # Setup QEMU
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v1
+
+      # Setup Docker Buildx
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       # Login to the registry
       - name: Login to the registry
@@ -82,5 +57,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
+          context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
