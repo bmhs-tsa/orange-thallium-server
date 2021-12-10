@@ -34,10 +34,15 @@ can be found [here](https://github.com/bmhs-tsa/orange-thallium-client).
 use the below JSON as a template:
 ```json
 {
-  "{ACCOUNT ID}": {
-    "username": "{ACCOUNT USERNAME}",
-    "password": "{ACCOUNT PASSWORD}",
-    "mfaCode": "{ACCOUNT MFA SECRET}" //Optional (Unsupported right now)
+  "[Account ID]": {
+    "username": "[Account username]",
+    "password": "[Account password]",
+     //Optional
+    "mfa": {
+       "type": "[MFA type]", //"hotp" or "totp"
+       "secret": "[MFA secret]",
+       "counter": 0 //Only for hotp
+    }
   }
 }
 ```

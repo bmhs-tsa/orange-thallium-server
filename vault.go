@@ -86,3 +86,28 @@ func readCredential(path string, key string) (map[string]interface{}, error) {
 
 	return data[key].(map[string]interface{}), nil
 }
+
+//writeCredential writes the desired value to a credential in Vault
+func writeCredential(path string, key string, data map[string]interface{}) error {
+	//Read the credential
+	credential, err := vaultLogical.Read(path)
+
+	if err != nil {
+		return err
+	}
+
+	if credential == nil || credential.Data["data"] == nil {
+		return vaultError{
+			Message:  "No credential found! (Verify the Vault secret path)",
+			Warnings: credential.Warnings,
+		}
+	}
+
+	//Update the credential
+	credential.Data["data"].(map[string]interface{})[key] = data
+
+	//Write the credential
+	_, err = vaultLogical.Write(path, credential.Data)
+
+	return err
+}

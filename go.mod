@@ -8,6 +8,7 @@ require (
 	github.com/hashicorp/vault/api v1.3.0
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/labstack/gommon v0.3.1
+	github.com/pquerna/otp v1.3.0
 	github.com/spf13/viper v1.9.0
 	github.com/tidwall/gjson v1.12.1
 )
@@ -15,6 +16,7 @@ require (
 require (
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect

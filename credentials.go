@@ -3,8 +3,11 @@ package main
 import (
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pquerna/otp/hotp"
+	"github.com/pquerna/otp/totp"
 	"github.com/spf13/viper"
 )
 
@@ -21,7 +24,7 @@ func credentialRoutes() {
 type getCredentialResponse struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	//MfaCode  string `json:"mfaCode,omitempty"`
+	MfaCode  string `json:"mfaCode,omitempty"`
 }
 
 //getCredential is used to get a credential
@@ -54,21 +57,52 @@ func getCredential(ctx echo.Context) error {
 		Password: credential["password"].(string),
 	}
 
-	//MFA code
-	/*if credential["mfaSecret"] != nil && len(credential["mfaSecret"].(string)) > 0 {
-		//Compute the desired time
-		advance := time.Duration(viper.GetInt64("mfa.time_shift"))
-		desiredTime := time.Now().Add(time.Second * time.Duration(advance))
+	//Generate MFA code
+	if credential["mfa"] != nil {
+		//Cast
+		mfa := credential["mfa"].(map[string]interface{})
 
-		//Generate the current MFA code
-		mfaCode, err := totp.GenerateCode(credential["mfaSecret"].(string), desiredTime)
+		var err error
+		switch mfa["type"].(string) {
+		//HOTP
+		case "hotp":
+			//Get the counter
+			counter := uint64(mfa["counter"].(int64))
 
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+			//Generate the code
+			res.MfaCode, err = hotp.GenerateCode(credential["mfaSecret"].(string), counter)
+
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+			}
+
+			//Increment the counter
+			counter++
+
+			//Store the counter
+			err = writeCredential(platform.Key, accountID, credential)
+
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+			}
+
+		//TOTP
+		case "totp":
+			//Compute the desired time
+			advance := time.Duration(viper.GetInt64("mfa.time_shift"))
+			desiredTime := time.Now().Add(time.Second * time.Duration(advance))
+
+			//Generate the code
+			res.MfaCode, err = totp.GenerateCode(credential["mfaSecret"].(string), desiredTime)
+
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+			}
+
+		default:
+			return echo.NewHTTPError(http.StatusInternalServerError, "Invalid MFA type")
 		}
-
-		res.MfaCode = mfaCode
-	}*/
+	}
 
 	return ctx.JSON(http.StatusOK, res)
 }
